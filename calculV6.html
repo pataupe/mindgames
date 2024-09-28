@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul 20</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0eafc;
+
+            margin: 0;
+            padding-top: 60px;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #4A90E2;
+            padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header a {
+            text-decoration: none;
+            color: white;
+
+        }
+
+        .title-link {
+
+            color: inherit;
+
+        }
+
+        .retour-link {
+
+            position: absolute;
+            left: 20px;
+
+            top: 50%;
+            transform: translateY(-50%);
+
+        }
+
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.35);
+
+            z-index: 1000;
+        }
+
+        .start-content {
+            background: linear-gradient(135deg, #ffffff, #f0f4f8);
+
+            padding: 40px;
+            border: 2px solid #4A90E2;
+
+            border-radius: 15px;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #startScreen p {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+
+        }
+
+        #startScreen button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #startScreen button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+
+        .main-container {
+            display: flex;
+
+            justify-content: space-between;
+
+            width: 80%;
+            height: 80%;
+        }
+
+        .left-screen,
+        .right-screen {
+            flex: 1;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 0 10px;
+
+            position: relative;
+        }
+
+        .current-operation {
+            font-size: 62px;
+            border: 2px solid black;
+
+            padding: 10px;
+            margin: auto;
+
+            text-align: center;
+
+            box-sizing: border-box;
+        }
+
+        .future-operation {
+            color: #121010;
+            font-size: 54px;
+            position: absolute;
+            bottom: 10%;
+
+            left: 50%;
+            transform: translateX(-50%);
+
+        }
+
+        .score-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #4A90E2;
+        }
+
+        input[type="tel"] {
+            padding: 11px;
+            font-size: 20px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="tel"]:focus {
+            border-color: #4A90E2;
+        }
+
+        #validateBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #validateBtn:hover {
+            background-color: #357ABD;
+        }
+
+        #feedback {
+            min-height: 24px;
+
+            font-size: 18px;
+        }
+
+        #endScreen {
+            display: none;
+            text-align: center;
+            background-color: #f0f4f8;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .end-message {
+            font-size: 68px;
+            color: #357ABD;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .end-time {
+            font-size: 40px;
+            font-weight: bold;
+            color: #4A90E2;
+            margin-bottom: 20px;
+        }
+
+        .end-comment {
+            font-size: 30px;
+            font-style: italic;
+            font-weight: bold;
+            color: #FF5733;
+            margin-bottom: 30px;
+        }
+
+        #endScreen button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #endScreen button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+
+
+        #countdown {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: bold;
+            color: black;
+            z-index: 1001;
+        }
+
+        .restartBtn {
+            position: absolute;
+            top: 90%;
+            left: 70%;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px;
+        }
+
+        .main-container {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1><a href="calculV6.html" class="title-link">Calcul 20</a></h1>
+        <a href="accueiljeu.php" class="retour-link">Retour à l'accueil</a>
+    </div>
+
+
+    <div id="startScreen">
+        <div class="start-content">
+            <p>Bienvenue dans le jeu Calcul 20 !</p>
+            <p>Le but est de résoudre 20 calculs le plus rapidement possible.</p>
+            <p>Vous devez résoudre le calcul encadré. Celui situé en dessous sera le suivant.</p>
+            <p>Appuyez sur "Start" pour commencer.</p>
+            <button id="startBtn">Start</button>
+        </div>
+    </div>
+
+
+    <div id="countdown">3</div>
+
+
+    <div class="main-container">
+        <div class="left-screen">
+            <div class="score-counter" id="scoreCounter">Score : 0/20</div>
+            <p class="current-operation" id="currentOperation"></p>
+            <p class="future-operation" id="futureOperation"></p>
+        </div>
+        <div class="right-screen">
+            <input type="tel" id="answer" placeholder="Votre réponse" autocomplete="off">
+            <button id="validateBtn">Valider</button>
+            <p id="feedback"></p>
+            <button class="restartBtn" onclick="restartGame()"> Recommencer </button>
+        </div>
+    </div>
+    <div id="endScreen">
+        <p class="end-message">Terminé !</p>
+        <p class="end-time" id="finalTime"></p>
+        <p class="end-comment" id="finalComment"></p>
+        <button id="replayBtn" onclick="location.reload()">Rejouer</button>
+        <a href="accueiljeu.php"><button>Retour à l'accueil</button></a>
+    </div>
+
+    <script>
+        let correctAnswer;
+        let score = 0;
+        let currentOperation;
+        let nextOperation;
+        let startTime;
+
+        function generateQuestion() {
+            let num1 = Math.floor(Math.random() * 20) + 1;
+            let num2 = Math.floor(Math.random() * 10) + 1;
+            const rnd = Math.random();
+            let signe = "";
+
+            if (rnd < 0.27) {
+                correctAnswer = num1 + num2;
+                signe = '+';
+            } else if (rnd < 0.54) {
+                if (num2 > num1) {
+                    num1 += 10;
+                }
+                correctAnswer = num1 - num2;
+                signe = '-';
+            } else if (rnd < 0.81) {
+                correctAnswer = num1 * num2;
+                signe = '×';
+            } else {
+                num1 = Math.floor(Math.random() * 99) + 1;
+                if ((num1 % num2) != 0) {
+                    num1 -= (num1 % num2);
+                }
+                correctAnswer = Math.round(num1 / num2);
+                signe = '÷';
+            }
+
+            return {
+                question: `${num1} ${signe} ${num2}`,
+                answer: correctAnswer
+            };
+        }
+
+        function updateOperations() {
+            if (!nextOperation) {
+                nextOperation = generateQuestion();
+            }
+            currentOperation = nextOperation;
+            nextOperation = generateQuestion();
+
+            document.getElementById('currentOperation').innerText = currentOperation.question;
+            document.getElementById('futureOperation').innerText = nextOperation.question;
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const feedbackElement = document.getElementById('feedback');
+
+            if (userAnswer === currentOperation.answer) {
+                score++;
+                feedbackElement.innerText = "Bien joué !";
+                feedbackElement.style.color = "green";
+
+                document.getElementById('scoreCounter').innerText = `Score : ${score}/20`;
+
+                setTimeout(() => {
+                    feedbackElement.innerText = "";
+                }, 900);
+
+            } else {
+                feedbackElement.innerText = "C'est faux !";
+                feedbackElement.style.color = "red";
+            }
+
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+
+            if (score >= 20) {
+                endGame();
+            } else {
+                updateOperations();
+            }
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+        }
+
+        function getCommentBasedOnTime(totalTime) {
+            if (totalTime <= 30) {
+                return "Incroyable ! Vous êtes un pro !";
+            } else if (totalTime <= 50) {
+                return "Joli score :) ";
+            } else if (totalTime <= 80) {
+                return "Pas mal ! Continuez à vous améliorer.";
+            } else if (totalTime <= 120) {
+                return "Correct, mais vous pouvez faire mieux !";
+            } else {
+                return "Un petit coup de fatigue ?";
+            }
+        }
+
+
+        function envoyerScore(score) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "enregistrer_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send("score=" + score + "&game=calcul20");
+        }
+
+        function endGame() {
+            const endTime = Date.now();
+            const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+            const comment = getCommentBasedOnTime(totalTime);
+
+
+            envoyerScore(totalTime); 
+
+
+            document.querySelector('.main-container').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            document.getElementById('finalTime').innerText = `Temps : ${totalTime} secondes`;
+            document.getElementById('finalComment').innerText = comment;
+        }
+
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            let countdownValue = 3;
+
+            countdownElement.innerText = countdownValue;
+            countdownElement.style.display = 'block';
+
+            const countdownInterval = setInterval(() => {
+                countdownValue--;
+                if (countdownValue > 0) {
+                    countdownElement.innerText = countdownValue;
+                } else if (countdownValue === 0) {
+                    countdownElement.innerText = "Go!";
+                    startTimer();
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.style.display = 'none';
+                    document.querySelector('.main-container').style.display = 'flex';
+                    updateOperations();
+                    document.getElementById('answer').focus();
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            document.querySelector('.main-container').style.display = 'none';
+
+            document.getElementById('startBtn').addEventListener('click', function () {
+                document.getElementById('startScreen').style.display = 'none';
+                startCountdown();
+            });
+
+            document.getElementById('validateBtn').addEventListener('click', checkAnswer);
+
+            document.getElementById('answer').addEventListener('input', function () {
+                const userAnswer = parseInt(this.value);
+                if (userAnswer === currentOperation.answer) {
+                    checkAnswer();
+                }
+            });
+        };
+    </script>
+
+</body>
+
+</html>

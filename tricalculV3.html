@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<?php
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['username'])) {
+    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+    header("Location: login.html");
+    exit;
+}
+?>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jouer à Tricalcul</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #4A90E2;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            padding-left: 44%;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            position: absolute;
+            padding-left: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 31px;
+            position: relative;
+            bottom: -26px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .circle {
+            width: 73px;
+            height: 73px;
+            background-color: #f3ffff;
+            border: black solid;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: black;
+            font-family: Arial, sans-serif;
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .number {
+            font-family: Arial, sans-serif;
+            font-size: 60px;
+            font-weight: bold;
+        }
+
+        .operateur {
+            font-size: 60px;
+            position: relative;
+            top: 34px;
+        }
+
+        input[type="tel"] {
+            width: 200px;
+            height: 100px;
+            background-color: #fcfdff;
+            border: 2px solid #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 36px;
+            margin: 1px 0;
+        }
+
+        input[type="tel"]::placeholder {
+            color: #7777777a;
+            text-align: center;
+        }
+
+        #validateBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: -14px;
+        }
+
+        #validateBtn:hover {
+            background-color: #357ABD;
+        }
+
+        .equal-row {
+            margin-top: -29px;
+        }
+
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.25);
+            z-index: 1000;
+            font-size: 24px;
+        }
+
+        .start-content {
+            background: linear-gradient(135deg, #ffffff, #f0f4f8);
+            padding: 40px;
+            border: 2px solid #4A90E2;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #startScreen button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #startScreen button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+
+        #countdown {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: bold;
+            color: black;
+            z-index: 1001;
+        }
+
+        #feedbackMessage {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 0;
+            min-height: 1px;
+            color: transparent;
+        }
+
+
+        #endScreen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f4f8;
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 70%;
+            margin: 0 auto;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .end-message {
+            font-size: 60px;
+            color: #357ABD;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .end-time {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4A90E2;
+            margin-bottom: 20px;
+        }
+
+        .end-comment {
+            font-size: 27px;
+            font-style: italic;
+            font-weight: bold;
+            color: #FF5733;
+            margin-bottom: 30px;
+        }
+
+        #endScreen button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #endScreen button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Tricalcul</h1>
+        <a href="accueiljeu.php">Retour à l'accueil</a>
+    </div>
+
+
+    <div id="startScreen">
+        <div class="start-content">
+            <p>Bienvenue dans le jeu Tricalcul !</p>
+            <p>Le but est de résoudre les calculs le plus rapidement possible.</p>
+            <p>Appuyez sur "Start" pour commencer.</p>
+            <button id="startBtn">Start</button>
+        </div>
+    </div>
+
+
+    <div id="countdown">3</div>
+
+    <div class="container">
+        <div class="row">
+            <div id="cercle1" class="number">1</div> <span class="operateur"> +</span>
+            <div id="cercle2" class="number">2</div> <span class="operateur"> +</span>
+            <div id="cercle3" class="number">3</div>
+        </div>
+        <div class="row">
+            <div id="cercle4" class="circle"></div> <span class="operateur"> +</span>
+            <div id="cercle5" class="circle"></div>
+        </div>
+        <div class="row equal-row">
+            <span class="operateur"> = </span>
+        </div>
+        <div class="row">
+            <input type="tel" placeholder="Réponse..." id="answer" autocomplete="off">
+        </div>
+
+        <p id="feedbackMessage"></p>
+
+        <button id="validateBtn">Valider</button>
+    </div>
+
+
+    <div id="endScreen">
+        <p class="end-message">Terminé !</p>
+        <p class="end-time" id="finalTime"></p>
+        <p class="end-comment" id="finalComment"></p>
+        <button id="replayBtn" onclick="location.reload()">Rejouer</button>
+        <a href="accueiljeu.php"><button>Retour à l'accueil</button></a>
+    </div>
+
+    <script>
+        let num1, num2, num3, correctAnswer;
+        let score = 0;
+        let startTime, endTime;
+
+
+        function genereCalcul() {
+            do {
+                num1 = Math.floor(Math.random() * 9) + 1;
+                num2 = Math.floor(Math.random() * 9) + 1;
+                num3 = Math.floor(Math.random() * 9) + 1;
+            } while (num1 === num2 || num1 === num3 || num2 === num3);
+
+
+            document.getElementById('cercle1').innerText = num1;
+            document.getElementById('cercle2').innerText = num2;
+            document.getElementById('cercle3').innerText = num3;
+
+
+            correctAnswer = num1 + num2 + num2 + num3;
+        }
+
+        function envoyerScore(score) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "enregistrer_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+            const scoreAvecDecimales = parseFloat(score).toFixed(2);
+
+            xhr.send("score=" + encodeURIComponent(scoreAvecDecimales) + "&game=tricalcul");
+
+            console.log("Score envoyé : " + scoreAvecDecimales);
+        }
+
+
+        function afficherEcranFin(tempsEcoule) {
+            document.querySelector('.container').style.display = 'none';
+            const endScreen = document.getElementById('endScreen');
+            endScreen.style.display = 'flex';
+
+
+            const tempsAvecDecimales = parseFloat(tempsEcoule).toFixed(2);
+
+
+            document.getElementById('finalTime').innerText = `Temps : ${tempsAvecDecimales} secondes`;
+            document.getElementById('finalComment').innerText = genererCommentaire(tempsAvecDecimales);
+
+
+            envoyerScore(tempsAvecDecimales);
+        }
+
+
+
+
+
+        function genererCommentaire(tempsEcoule) {
+            if (tempsEcoule < 30) {
+                return "Incroyable ! Vous êtes un pro !";
+            } else if (tempsEcoule < 50) {
+                return "Joli score :)";
+            } else if (tempsEcoule < 80) {
+                return "Pas mal ! Continuez à vous améliorer.";
+            } else if (tempsEcoule < 120) {
+                return "Correct, mais vous pouvez faire mieux !";
+            } else {
+                return "Un petit coup de fatigue ?";
+            }
+        }
+
+
+        function checkAnswer() {
+            const answerInput = document.getElementById('answer');
+            const userAnswer = parseInt(answerInput.value.trim());
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+
+            if (userAnswer === correctAnswer) {
+                answerInput.style.borderColor = 'green';
+                feedbackMessage.innerText = "Correct!";
+                feedbackMessage.style.color = 'green';
+
+                score++;
+
+
+                if (score === 10) {
+                    endTime = new Date();
+                    const tempsEcoule = ((endTime - startTime) / 1000).toFixed(2);
+                    afficherEcranFin(tempsEcoule);
+                } else {
+                    genereCalcul();
+                }
+
+            } else {
+                answerInput.style.borderColor = 'red';
+                feedbackMessage.innerText = "Incorrect, essayez encore!";
+                feedbackMessage.style.color = 'red';
+            }
+
+
+            answerInput.value = '';
+            answerInput.focus();
+        }
+
+
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            let countdownValue = 3;
+
+            countdownElement.innerText = countdownValue;
+            countdownElement.style.display = 'block';
+
+            const countdownInterval = setInterval(() => {
+                countdownValue--;
+                if (countdownValue > 0) {
+                    countdownElement.innerText = countdownValue;
+                } else if (countdownValue === 0) {
+                    countdownElement.innerText = "Go!";
+                    startTime = new Date();
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.style.display = 'none';
+                    document.querySelector('.container').style.display = 'flex';
+                    genereCalcul();
+                    document.getElementById('answer').focus();
+                }
+            }, 1000);
+        }
+
+
+        window.onload = function () {
+
+            document.querySelector('.container').style.display = 'none';
+
+
+            document.getElementById('startBtn').addEventListener('click', function () {
+                document.getElementById('startScreen').style.display = 'none';
+                startCountdown();
+            });
+
+
+            document.getElementById('validateBtn').addEventListener('click', checkAnswer);
+
+
+            document.getElementById('answer').addEventListener('input', function () {
+                const userAnswer = parseInt(this.value);
+                if (userAnswer === correctAnswer) {
+                    checkAnswer();
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Mémoire Visuelle</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #4A90E2;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            padding-left: 41%;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            position: absolute;
+            padding-left: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            top: 80px;
+        }
+
+        .sequence-box {
+            font-size: 48px;
+            font-weight: bold;
+            word-spacing: 20px;
+            color: #333;
+            padding: 20px;
+            background-color: #fcfdff;
+            border: 2px solid #4A90E2;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            visibility: hidden; 
+        }
+
+        input[type="tel"] {
+            width: 300px;
+            height: 60px;
+            background-color: #fcfdff;
+            border: 2px solid #000000;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+            position: relative;
+        }
+
+        input[type="tel"]:disabled {
+            background-color: #e0e0e0;
+            color: #777;
+        }
+
+        input[type="tel"]::placeholder {
+            color: #777;
+        }
+
+        #validateBtn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #validateBtn:hover {
+            background-color: #357ABD;
+        }
+
+        #feedbackMessage {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: transparent;
+        }
+
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.25);
+            z-index: 1000;
+            font-size: 24px;
+        }
+
+        .start-content {
+            background: linear-gradient(135deg, #ffffff, #f0f4f8);
+            padding: 40px;
+            border: 2px solid #4A90E2;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #startScreen button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #startScreen button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+
+        #countdown {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: bold;
+            color: black;
+            z-index: 1001;
+        }
+
+        #endScreen {
+            display: none;
+            text-align: center;
+            background-color: #f0f4f8;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            margin: 0 auto;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .end-message {
+            font-size: 60px;
+            color: #357ABD;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .end-time {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4A90E2;
+            margin-bottom: 20px;
+        }
+
+        .end-comment {
+            font-size: 27px;
+            font-style: italic;
+            font-weight: bold;
+            color: #FF5733;
+            margin-bottom: 30px;
+        }
+
+        #endScreen button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #endScreen button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+
+        .restartBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .restartBtn:hover {
+            background-color: #357ABD;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mémoire Visuelle</h1>
+        <a href="accueiljeu.php">Retour à l'accueil</a>
+    </div>
+
+ 
+    <div id="startScreen">
+        <div class="start-content">
+            <p>Bienvenue dans le jeu de mémoire visuelle !</p>
+            <p>Rappelez-vous de la séquence et reproduisez-la.</p>
+            <p>Appuyez sur "Start" pour commencer.</p>
+            <button id="startBtn">Start</button>
+        </div>
+    </div>
+
+    
+    <div id="countdown">3</div>
+
+   
+    <div class="container" id="gameContainer" style="display: none;">
+        <div class="sequence-box" id="sequenceBox"></div>
+        <input type="tel" id="userInput" placeholder="Entrez la séquence ici" maxlength="20" autocomplete="off">
+        <button id="validateBtn">Valider</button>
+        <button class="restartBtn" onclick="restartGame()">Recommencer</button>
+        <p id="feedbackMessage"></p>
+    </div>
+
+    
+    <div id="endScreen">
+        <p class="end-message">Terminé !</p>
+        <p class="end-time" id="finalScore"></p>
+        <p class="end-comment" id="finalComment"></p>
+        <button id="replayBtn" onclick="location.reload()">Rejouer</button>
+        <a href="accueiljeu.php"><button>Retour à l'accueil</button></a>
+    </div>
+
+    <script>
+        let sequence = [];
+        let level = 1;
+        let score = 0;
+        let gameInProgress = false;
+
+       
+        function generateSequence(length) {
+            sequence = [];
+            for (let i = 0; i < length; i++) {
+                const randomDigit = Math.floor(Math.random() * 10);
+                sequence.push(randomDigit);
+            }
+            displaySequence();
+        }
+
+        
+        function displaySequence() {
+            const sequenceBox = document.getElementById('sequenceBox');
+            const userInput = document.getElementById('userInput');
+            
+            
+            userInput.disabled = true;
+            sequenceBox.innerText = sequence.join(' ');
+            sequenceBox.style.visibility = 'visible';
+
+            setTimeout(() => {
+                sequenceBox.style.visibility = 'hidden';
+                userInput.disabled = false;
+                userInput.value = '';  
+                userInput.focus();
+            }, 650 + level * 200);  
+        }
+
+        
+        function validateInput() {
+            if (!gameInProgress) return;
+
+            const userInput = document.getElementById('userInput').value.split('').map(Number);
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+            if (arraysEqual(userInput, sequence)) {
+                score++;
+                level++;
+                feedbackMessage.innerText = "Bien joué !";
+                feedbackMessage.style.color = "green";
+                setTimeout(() => {
+                    feedbackMessage.innerText = "";
+                    generateSequence(level);
+                }, 1000);
+            } else {
+                feedbackMessage.innerText = "C'est faux !";
+                feedbackMessage.style.color = "red";
+                endGame();
+            }
+        }
+
+        
+        function arraysEqual(arr1, arr2) {
+            return JSON.stringify(arr1) === JSON.stringify(arr2);
+        }
+
+       
+        function envoyerScore(score) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "enregistrer_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send("score=" + score + "&game=memoire");
+        }
+
+        
+        function endGame() {
+            gameInProgress = false;
+            document.getElementById('gameContainer').style.display = 'none';
+            const endScreen = document.getElementById('endScreen');
+            const finalScore = document.getElementById('finalScore');
+            const finalComment = document.getElementById('finalComment');
+
+            finalScore.innerText = `Score : ${score}`;
+            finalComment.innerText = getComment(score);
+            endScreen.style.display = 'block';
+
+         
+            envoyerScore(score);
+        }
+
+      
+        function getComment(score) {
+            if (score >= 10) {
+                return "Incroyable ! Vous avez une mémoire d'éléphant !";
+            } else if (score >= 7) {
+                return "Très bien ! Continuez à améliorer votre mémoire !";
+            } else if (score >= 5) {
+                return "Pas mal ! Vous pouvez faire encore mieux.";
+            } else {
+                return "Vous pouvez faire mieux, essayez encore !";
+            }
+        }
+
+        
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const gameContainer = document.getElementById('gameContainer');
+            const userInput = document.getElementById('userInput');
+            const validateBtn = document.getElementById('validateBtn');
+            const restartBtn = document.querySelector('.restartBtn');
+
+            let countdownValue = 3;
+            countdownElement.innerText = countdownValue;
+            countdownElement.style.display = 'block';
+            gameContainer.style.display = 'none'; 
+
+            const countdownInterval = setInterval(() => {
+                countdownValue--;
+                if (countdownValue > 0) {
+                    countdownElement.innerText = countdownValue;
+                } else if (countdownValue === 0) {
+                    countdownElement.innerText = "Go!";
+                    clearInterval(countdownInterval);
+
+                
+                    userInput.style.display = 'none';
+                    validateBtn.style.display = 'none';
+                    restartBtn.style.display = 'none';
+
+                    setTimeout(() => {
+                        countdownElement.style.display = 'none';
+                        gameContainer.style.display = 'flex'; 
+                        userInput.style.display = 'block';  
+                        validateBtn.style.display = 'block';  
+                        restartBtn.style.display = 'block';  
+                        generateSequence(level);  
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        
+        function restartGame() {
+            score = 0;
+            level = 1;
+            document.getElementById('gameContainer').style.display = 'flex';
+            document.getElementById('endScreen').style.display = 'none';
+            generateSequence(level);
+        }
+
+        
+        window.onload = function () {
+            document.getElementById('validateBtn').addEventListener('click', validateInput);
+
+            
+            document.getElementById('userInput').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    validateInput();
+                }
+            });
+
+            document.getElementById('startBtn').addEventListener('click', function () {
+                document.getElementById('startScreen').style.display = 'none';
+                startCountdown();
+                gameInProgress = true;
+            });
+        };
+    </script>
+</body>
+</html>
